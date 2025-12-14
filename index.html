@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Masterplan Desa Makmur 2029 | Lampung Timur Green</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ['"Righteous"', 'cursive'],
+              sans: ['"Outfit"', 'sans-serif'],
+            },
+            colors: {
+              pop: {
+                primary: '#00E676',   // Vibrant Emerald
+                secondary: '#00BFA5', // Teal
+                accent: '#C6FF00',    // Lime
+                dark: '#003300',      // Deep Forest Green / Black
+                light: '#F1F8E9',     // Very Light Green
+                muted: '#A5D6A7',     // Soft Green
+              }
+            },
+            boxShadow: {
+              'pop': '4px 4px 0px 0px #003300',
+              'pop-hover': '6px 6px 0px 0px #003300',
+              'pop-sm': '2px 2px 0px 0px #003300',
+            },
+            backgroundImage: {
+              'pop-dots': 'radial-gradient(#003300 1px, transparent 1px)',
+            },
+            animation: {
+              'bounce-slow': 'bounce 3s infinite',
+              'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 100px;
+      }
+      body {
+        background-color: #F1F8E9;
+        color: #003300;
+        overflow-x: hidden;
+      }
+      @media print {
+        nav, footer, button {
+          display: none !important;
+        }
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+      }
+      .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+      }
+      .leaflet-container {
+        font-family: "Outfit", sans-serif;
+        z-index: 10;
+      }
+      /* Custom selection color */
+      ::selection {
+        background: #00E676;
+        color: #003300;
+      }
+      
+      /* Pop Art Pattern Class */
+      .bg-pop-pattern {
+        background-color: #ffffff;
+        background-image: radial-gradient(#a5d6a7 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom": "https://aistudiocdn.com/react-dom@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@react-three/fiber": "https://aistudiocdn.com/@react-three/fiber@^9.4.0",
+    "@react-three/drei": "https://aistudiocdn.com/@react-three/drei@^10.7.7",
+    "three": "https://aistudiocdn.com/three@^0.181.1",
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.24",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.553.0",
+    "recharts": "https://aistudiocdn.com/recharts@^2.15.0",
+    "leaflet": "https://esm.sh/leaflet@1.9.4",
+    "react-leaflet": "https://esm.sh/react-leaflet@4.2.1?external=react,react-dom,leaflet"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

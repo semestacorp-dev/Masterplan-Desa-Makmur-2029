@@ -8,31 +8,6 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Icosahedron, Octahedron, MeshDistortMaterial, Text, Stars, Environment, Ring, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Fix for missing R3F types in global JSX namespace and React module
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      group: any;
-      meshStandardMaterial: any;
-      ambientLight: any;
-      spotLight: any;
-      pointLight: any;
-    }
-  }
-}
-
-declare module 'react' {
-  namespace JSX {
-    interface IntrinsicElements {
-      group: any;
-      meshStandardMaterial: any;
-      ambientLight: any;
-      spotLight: any;
-      pointLight: any;
-    }
-  }
-}
-
 const ID6Core = () => {
   const ref = useRef<THREE.Mesh>(null);
   
@@ -107,9 +82,9 @@ const PilotVillageNode: React.FC<{ position: [number, number, number], label: st
 
 export const VillageScene: React.FC = () => {
   const villages = [
-      "Braja Gemilang", "Banjar Rejo", "Tulus Rejo", "Margototo",
-      "Labuhan Ratu IX", "Raman Endra", "Pugung Raharjo", "Giri Mulyo",
-      "Sukadana Baru", "Sri Menanti", "Raman Fajar", "Bumi Mulyo"
+      "Braja Gemilang", "Raman Fajar", "Giri Mulyo", "Sukadana Baru",
+      "Pugung Raharjo", "Banjar Rejo", "Labuhan Ratu IX", "Sri Menanti",
+      "Bumi Mulyo", "Raman Endra", "Margototo", "Tulus Rejo"
   ];
   
   // Green/Teal/Lime colors

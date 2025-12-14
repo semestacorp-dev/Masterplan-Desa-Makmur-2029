@@ -4,13 +4,18 @@
 */
 
 import React, { useState, useEffect } from 'react';
+import { GoogleGenAI } from "@google/genai";
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { HeroScene, VillageScene } from './components/QuantumScene';
 import { ID6RadarDiagram, RpjmdMatrix, PilotVillagesGrid } from './components/Diagrams';
 import { VillageMap } from './components/VillageMap';
 import { DesaMatrix } from './components/DesaMatrix';
 import { CascadingStrategy } from './components/CascadingStrategy';
-import { ArrowDown, Menu, X, BarChart3, AlertTriangle, Scale, Download } from 'lucide-react';
+import { ImageGenerator } from './components/ImageGenerator';
+import { DeepResearchAnalysis } from './components/DeepResearchAnalysis';
+import { ExecutiveSummary } from './components/ExecutiveSummary';
+import { MapsAssistant } from './components/MapsAssistant';
+import { ArrowDown, Menu, X, BarChart3, AlertTriangle, Scale, Download, BookOpen, Heart, Zap, Palette, Smile, Newspaper, Loader2, ExternalLink } from 'lucide-react';
 
 // --- ANIMATION VARIANTS ---
 const fadeInValues = {
@@ -158,6 +163,8 @@ const LeaderSection = () => (
 const App: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [newsItems, setNewsItems] = useState<{title: string, uri: string}[]>([]);
+  const [isNewsLoading, setIsNewsLoading] = useState(false);
   const { scrollY } = useScroll();
   
   // Parallax for Hero text
@@ -183,6 +190,34 @@ const App: React.FC = () => {
         top: offsetPosition,
         behavior: "smooth"
       });
+    }
+  };
+
+  const handleFetchNews = async () => {
+    setIsNewsLoading(true);
+    setNewsItems([]); 
+    try {
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: 'Cari 3 berita terbaru tentang pembangunan desa dan inovasi desa di Indonesia. Prioritaskan berita tahun 2024-2025.',
+            config: {
+                tools: [{googleSearch: {}}]
+            }
+        });
+
+        const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
+        const validNews = chunks
+            ?.map((c: any) => c.web)
+            .filter((w: any) => w && w.title && w.uri)
+            .slice(0, 3) || [];
+            
+        setNewsItems(validNews);
+
+    } catch (error) {
+        console.error("News fetch error:", error);
+    } finally {
+        setIsNewsLoading(false);
     }
   };
 
@@ -217,9 +252,13 @@ const App: React.FC = () => {
           <div className="hidden md:flex items-center gap-4">
             <NavLink href="#traps" onClick={scrollToSection('traps')}>Diagnosis</NavLink>
             <NavLink href="#solution" onClick={scrollToSection('solution')}>Pancadaya</NavLink>
-            <NavLink href="#strategy" onClick={scrollToSection('strategy')}>Strategi</NavLink>
+            <NavLink href="#strategy" onClick={scrollToSection('strategy')}>Strategy</NavLink>
+            <NavLink href="#rpjmd-matrix" onClick={scrollToSection('rpjmd-matrix')}>RPJMD</NavLink>
             <NavLink href="#cascading" onClick={scrollToSection('cascading')}>Matriks</NavLink>
             <NavLink href="#database" onClick={scrollToSection('database')}>Data Center</NavLink>
+            <NavLink href="#pilots" onClick={scrollToSection('pilots')}>Pilot Villages</NavLink>
+            <NavLink href="#research" onClick={scrollToSection('research')}>Riset AI</NavLink>
+            <NavLink href="#visualisasi" onClick={scrollToSection('visualisasi')}>Visualisasi</NavLink>
             
             <motion.button 
               whileHover={{ scale: 1.05, rotate: 2 }}
@@ -249,10 +288,14 @@ const App: React.FC = () => {
             className="fixed inset-0 z-40 bg-pop-accent flex flex-col items-center justify-center gap-8 text-2xl font-display text-pop-dark border-l-4 border-pop-dark"
           >
               <a href="#traps" onClick={scrollToSection('traps')} className="hover:text-pop-primary hover:scale-110 transition-all">Diagnosis</a>
-              <a href="#solution" onClick={scrollToSection('solution')} className="hover:text-pop-secondary hover:scale-110 transition-all">Solusi</a>
-              <a href="#strategy" onClick={scrollToSection('strategy')} className="hover:text-white hover:scale-110 transition-all">Strategi</a>
+              <a href="#solution" onClick={scrollToSection('solution')} className="hover:text-pop-secondary hover:scale-110 transition-all">Pancadaya</a>
+              <a href="#strategy" onClick={scrollToSection('strategy')} className="hover:text-white hover:scale-110 transition-all">Strategy</a>
+              <a href="#rpjmd-matrix" onClick={scrollToSection('rpjmd-matrix')} className="hover:text-pop-primary hover:scale-110 transition-all">RPJMD</a>
               <a href="#cascading" onClick={scrollToSection('cascading')} className="hover:text-pop-primary hover:scale-110 transition-all">Matriks</a>
               <a href="#database" onClick={scrollToSection('database')} className="hover:text-white hover:scale-110 transition-all">Data Center</a>
+              <a href="#pilots" onClick={scrollToSection('pilots')} className="hover:text-pop-primary hover:scale-110 transition-all">Pilot Villages</a>
+              <a href="#research" onClick={scrollToSection('research')} className="hover:text-pop-primary hover:scale-110 transition-all">Riset AI</a>
+              <a href="#visualisasi" onClick={scrollToSection('visualisasi')} className="hover:text-white hover:scale-110 transition-all">Visualisasi</a>
           </motion.div>
         )}
       </AnimatePresence>
@@ -311,21 +354,58 @@ const App: React.FC = () => {
             </p>
           </motion.div>
           
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5 }}
-            className="flex justify-center gap-4"
-          >
-             <a href="#traps" onClick={scrollToSection('traps')} className="group cursor-pointer">
-                <div className="px-8 py-4 bg-pop-dark text-white rounded-full shadow-pop border-2 border-white group-hover:bg-pop-secondary group-hover:scale-105 transition-all duration-300 flex items-center gap-3">
-                   <span className="text-lg font-bold tracking-wide">Jelajahi Sekarang</span>
-                   <div className="bg-white rounded-full p-1 text-pop-dark group-hover:rotate-90 transition-transform duration-300">
-                     <ArrowDown size={20} />
-                   </div>
-                </div>
-             </a>
-          </motion.div>
+          <div className="flex flex-col items-center gap-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.5 }}
+              className="flex justify-center gap-4 flex-wrap"
+            >
+               <a href="#traps" onClick={scrollToSection('traps')}>
+                  <div className="px-8 py-4 bg-pop-dark text-white rounded-full shadow-pop border-2 border-white hover:bg-pop-secondary hover:scale-105 transition-all duration-300 flex items-center gap-3 cursor-pointer">
+                     <span className="text-lg font-bold tracking-wide">Jelajahi Sekarang</span>
+                     <div className="bg-white rounded-full p-1 text-pop-dark group-hover:rotate-90 transition-transform duration-300">
+                       <ArrowDown size={20} />
+                     </div>
+                  </div>
+               </a>
+               <button 
+                   onClick={handleFetchNews}
+                   disabled={isNewsLoading}
+                   className="px-8 py-4 bg-white text-pop-dark rounded-full shadow-pop border-2 border-pop-dark hover:bg-pop-light hover:scale-105 transition-all duration-300 flex items-center gap-3"
+               >
+                   {isNewsLoading ? <Loader2 className="animate-spin" size={20} /> : <Newspaper size={20} />}
+                   <span className="text-lg font-bold tracking-wide">Update Berita</span>
+               </button>
+            </motion.div>
+
+            <AnimatePresence>
+                {newsItems.length > 0 && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20, height: 0 }}
+                        animate={{ opacity: 1, y: 0, height: 'auto' }}
+                        exit={{ opacity: 0, y: 20, height: 0 }}
+                        className="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-xl border-2 border-pop-dark shadow-pop p-4 text-left relative z-20"
+                    >
+                        <div className="flex items-center justify-between mb-2 border-b-2 border-dashed border-stone-200 pb-2">
+                            <span className="text-xs font-black uppercase tracking-widest text-pop-primary">Live Updates</span>
+                            <span className="text-xs font-bold text-stone-400">Google Search Grounding</span>
+                        </div>
+                        <ul className="space-y-3">
+                            {newsItems.map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-2 group">
+                                    <ExternalLink size={14} className="mt-1 text-stone-400 group-hover:text-pop-dark flex-shrink-0" />
+                                    <a href={item.uri} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-stone-700 hover:text-pop-secondary hover:underline leading-snug">
+                                        {item.title}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+          </div>
+
         </motion.div>
       </header>
       
@@ -345,9 +425,9 @@ const App: React.FC = () => {
                  
                  <div className="space-y-6">
                     {[
-                      { icon: AlertTriangle, color: "bg-pop-accent", title: "Human Capital Trap", desc: "Kualitas SDM rendah (RLS < 9 tahun) dan stunting 14.8% menghambat produktivitas." },
-                      { icon: BarChart3, color: "bg-pop-secondary text-white", title: "Economic Structure Trap", desc: "Ekspor komoditas mentah (padi, jagung, singkong) tanpa hilirisasi, nilai tambah rendah." },
-                      { icon: Scale, color: "bg-pop-primary", title: "Fiscal & Service Trap", desc: "Kapasitas fiskal rendah membatasi investasi infrastruktur (kemantapan jalan hanya 60.2%)." }
+                      { icon: AlertTriangle, color: "bg-pop-accent", title: "Human Capital Trap", desc: "Rata-rata Lama Sekolah (RLS) tertahan di 8,20 tahun (Kesenjangan Generasi) dan prevalensi stunting 14,8%." },
+                      { icon: BarChart3, color: "bg-pop-secondary text-white", title: "Economic Structure Trap", desc: "Gap Hilirisasi dan kebocoran ekonomi akibat ketergantungan penjualan komoditas mentah (singkong/padi)." },
+                      { icon: Scale, color: "bg-pop-primary", title: "Fiscal & Service Trap", desc: "Kapasitas fiskal rendah (rasio kemandirian minim) membatasi layanan; jalan mantap hanya 60,2%." }
                     ].map((item, idx) => (
                       <motion.div 
                         key={idx}
@@ -421,7 +501,7 @@ const App: React.FC = () => {
                       Filosofi Pancadaya
                     </motion.h2>
                     <p className="text-xl text-stone-300 font-light leading-relaxed">
-                        Bukan sekadar program, melainkan metodologi untuk mengaktivasi energi sosial desa.
+                        Mesin penggerak bagi Tujuh Program Prioritas Inovatif di 12 Desa Percontohan.
                     </p>
                 </div>
 
@@ -432,22 +512,26 @@ const App: React.FC = () => {
                     
                     <div className="space-y-6">
                         {[
-                          { id: 1, title: "Shift to ID6", text: "Transisi dari Indeks Desa Membangun (IDM) ke Indeks Desa 6 Dimensi (ID6) untuk diagnosis yang lebih tajam.", color: "text-pop-accent", border: "border-pop-accent" },
-                          { id: 2, title: "Evidence-Based", text: "Intervensi tidak lagi berbasis keinginan ('wish list'), melainkan berbasis data defisit indikator ID6.", color: "text-pop-primary", border: "border-pop-primary" },
-                          { id: 3, title: "Sakai Sambayan", text: "Merevitalisasi semangat gotong royong sebagai 'Co-financing' pembangunan non-APBD.", color: "text-pop-secondary", border: "border-pop-secondary" }
+                          { id: 1, title: "Daya Pengetahuan", text: "Pembangunan berbasis riset dan data presisi. Transformasi perpustakaan menjadi pusat belajar vokasi.", color: "text-pop-accent", border: "border-pop-accent", icon: BookOpen },
+                          { id: 2, title: "Daya Pengorbanan", text: "Revitalisasi gotong royong dan kesukarelawanan sebagai modal sosial untuk efisiensi biaya infrastruktur.", color: "text-pop-primary", border: "border-pop-primary", icon: Heart },
+                          { id: 3, title: "Daya Pergerakan", text: "Penguatan kelembagaan lokal (BUMDes, Pokdarwis) sebagai motor penggerak ekonomi dan sosial.", color: "text-pop-secondary", border: "border-pop-secondary", icon: Zap },
+                          { id: 4, title: "Daya Kebudayaan", text: "Kapitalisasi aset budaya dan kearifan lokal menjadi nilai ekonomi kreatif.", color: "text-white", border: "border-white", icon: Palette },
+                          { id: 5, title: "Daya Kesejahteraan", text: "Fokus akhir pada peningkatan pendapatan dan akses layanan dasar bagi warga miskin.", color: "text-pop-primary", border: "border-pop-primary", icon: Smile }
                         ].map((item, idx) => (
                           <motion.div 
                             key={idx}
                             initial={{ x: 50, opacity: 0 }}
                             whileInView={{ x: 0, opacity: 1 }}
-                            transition={{ delay: idx * 0.2, duration: 0.6 }}
+                            transition={{ delay: idx * 0.1, duration: 0.6 }}
                             whileHover={{ x: -10, scale: 1.02 }}
-                            className={`flex items-start gap-5 p-5 rounded-2xl bg-stone-800/50 border-2 border-transparent hover:${item.border} transition-all duration-300`}
+                            className={`flex items-start gap-5 p-4 rounded-2xl bg-stone-800/50 border-2 border-transparent hover:${item.border} transition-all duration-300`}
                           >
-                              <div className={`w-14 h-14 rounded-xl bg-stone-900 flex items-center justify-center ${item.color} border-2 border-stone-700 shrink-0 font-display text-3xl shadow-pop`}>{item.id}</div>
+                              <div className={`w-12 h-12 rounded-xl bg-stone-900 flex items-center justify-center ${item.color} border-2 border-stone-700 shrink-0 shadow-pop`}>
+                                <item.icon size={24} />
+                              </div>
                               <div>
-                                  <h4 className={`text-2xl font-display mb-2 ${item.color}`}>{item.title}</h4>
-                                  <p className="text-stone-300 text-base leading-relaxed">{item.text}</p>
+                                  <h4 className={`text-xl font-display mb-1 ${item.color}`}>{item.title}</h4>
+                                  <p className="text-stone-300 text-sm leading-relaxed">{item.text}</p>
                               </div>
                           </motion.div>
                         ))}
@@ -467,7 +551,7 @@ const App: React.FC = () => {
                     </p>
                 </div>
                 
-                <div className="bg-white p-2 rounded-2xl border-2 border-pop-dark shadow-pop">
+                <div id="rpjmd-matrix" className="bg-white p-2 rounded-2xl border-2 border-pop-dark shadow-pop scroll-mt-32">
                     <RpjmdMatrix />
                 </div>
 
@@ -542,6 +626,7 @@ const App: React.FC = () => {
                         <h3 className="font-display text-4xl text-pop-dark">Peta Sebaran Desa</h3>
                     </div>
                     <VillageMap />
+                    <MapsAssistant />
                  </div>
 
                  <div className="mt-20 p-10 bg-white rounded-3xl border-4 border-pop-dark shadow-pop text-center relative overflow-hidden">
@@ -569,6 +654,21 @@ const App: React.FC = () => {
                         </div>
                     </div>
                  </div>
+            </div>
+        </SectionWrapper>
+
+        {/* Deep Research Section */}
+        <SectionWrapper id="research" className="py-24 bg-pop-pattern border-t-2 border-pop-dark">
+            <div className="container mx-auto px-6">
+                <ExecutiveSummary />
+                <DeepResearchAnalysis />
+            </div>
+        </SectionWrapper>
+
+        {/* Image Generation Section */}
+        <SectionWrapper id="visualisasi" className="py-24 bg-white border-t-2 border-pop-dark">
+            <div className="container mx-auto px-6">
+                <ImageGenerator />
             </div>
         </SectionWrapper>
 

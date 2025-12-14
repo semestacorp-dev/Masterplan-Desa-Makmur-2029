@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polygon, LayersControl } from 'react-leaflet';
 import * as L from 'leaflet';
-import { ExternalLink, Map as MapIcon } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 // Fix for default marker icons in React-Leaflet
 const customIcon = new L.Icon({
@@ -46,30 +46,30 @@ const getColorByStatus = (status: string) => {
     return '#C6FF00'; // Pop Accent
 };
 
+// Data moved outside component to be stable
+const VILLAGES = [
+    { name: "Braja Gemilang", lat: -5.230, lng: 105.720, niche: "Sentra Mocaf", status: "MAJU", id: 1 },
+    { name: "Raman Fajar", lat: -5.010, lng: 105.580, niche: "Sentra Kerupuk", status: "MANDIRI", id: 2 },
+    { name: "Giri Mulyo", lat: -5.380, lng: 105.650, niche: "Alpukat Siger", status: "MAJU", id: 3 },
+    { name: "Sukadana Baru", lat: -5.080, lng: 105.620, niche: "Lada Hitam", status: "MAJU", id: 4 },
+    { name: "Pugung Raharjo", lat: -5.320, lng: 105.580, niche: "Wisata Sejarah", status: "MANDIRI", id: 5 },
+    { name: "Banjar Rejo", lat: -5.130, lng: 105.480, niche: "Desa Budaya", status: "MAJU", id: 6 },
+    { name: "Labuhan Ratu IX", lat: -5.160, lng: 105.680, niche: "Ekowisata", status: "MANDIRI", id: 7 },
+    { name: "Sri Menanti", lat: -5.350, lng: 105.750, niche: "Konservasi Air", status: "MANDIRI", id: 8 },
+    { name: "Bumi Mulyo", lat: -5.340, lng: 105.600, niche: "Desa Literasi", status: "MAJU", id: 9 },
+    { name: "Raman Endra", lat: -4.980, lng: 105.550, niche: "Smart Village/Madu", status: "MANDIRI", id: 10 },
+    { name: "Margototo", lat: -5.050, lng: 105.380, niche: "Sentra Ternak", status: "MAJU", id: 11 },
+    { name: "Tulus Rejo", lat: -5.080, lng: 105.450, niche: "Sentra Pembibitan", status: "MANDIRI", id: 12 },
+];
+
+// Center of Lampung Timur
+const CENTER_POSITION: [number, number] = [-5.180, 105.600];
+
 export const VillageMap: React.FC = () => {
-    // 12 Pilot Villages with Approximate Coordinates in Lampung Timur
-    const villages = [
-        { name: "Braja Gemilang", lat: -5.230, lng: 105.720, niche: "Industri Mocaf", status: "MAJU", id: 1 },
-        { name: "Banjar Rejo", lat: -5.130, lng: 105.480, niche: "Gemati Budaya", status: "MAJU", id: 2 },
-        { name: "Tulus Rejo", lat: -5.080, lng: 105.450, niche: "Sentra Pembibitan", status: "MANDIRI", id: 3 },
-        { name: "Margototo", lat: -5.050, lng: 105.380, niche: "Peternakan Kambing", status: "MAJU", id: 4 },
-        { name: "Labuhan Ratu IX", lat: -5.160, lng: 105.680, niche: "Agrowisata TNWK", status: "MANDIRI", id: 5 },
-        { name: "Raman Endra", lat: -4.980, lng: 105.550, niche: "Desa Madu", status: "MANDIRI", id: 6 },
-        { name: "Pugung Raharjo", lat: -5.320, lng: 105.580, niche: "Kakao & Sejarah", status: "MANDIRI", id: 7 },
-        { name: "Giri Mulyo", lat: -5.380, lng: 105.650, niche: "Alpukat Siger", status: "MAJU", id: 8 },
-        { name: "Sukadana Baru", lat: -5.080, lng: 105.620, niche: "Desa Lada", status: "MAJU", id: 9 },
-        { name: "Sri Menanti", lat: -5.350, lng: 105.750, niche: "Wisata Kali Medek", status: "MANDIRI", id: 10 },
-        { name: "Raman Fajar", lat: -5.010, lng: 105.580, niche: "Kerupuk Singkong", status: "MANDIRI", id: 11 },
-        { name: "Bumi Mulyo", lat: -5.340, lng: 105.600, niche: "Literasi (Lebung)", status: "MAJU", id: 12 },
-    ];
-
-    // Center of Lampung Timur
-    const centerPosition: [number, number] = [-5.180, 105.600];
-
     return (
         <div className="w-full h-[600px] rounded-2xl overflow-hidden shadow-pop border-2 border-pop-dark z-0 relative">
             <MapContainer 
-                center={centerPosition} 
+                center={CENTER_POSITION} 
                 zoom={10} 
                 style={{ height: '100%', width: '100%' }}
                 scrollWheelZoom={false}
@@ -90,7 +90,7 @@ export const VillageMap: React.FC = () => {
                     </LayersControl.BaseLayer>
                 </LayersControl>
                 
-                {villages.map((v) => {
+                {VILLAGES.map((v) => {
                     const color = getColorByStatus(v.status);
                     const boundary = generateIrregularBoundary(v.lat, v.lng, 0.015, v.id);
                     
